@@ -1,19 +1,28 @@
 package com.example.first_assignment;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class CitizenRequest {
 
-    Timestamp timestamp;
-    Double latitude;
-    Double longitude;
-    String category;
-    String description;
-    String imagePath;
+    //private Timestamp timestamp;
+    private final String uid;
+    private final String date;
+    private final String time;
+    private final Double latitude;
+    private final Double longitude;
+    private final String category;
+    private final String description;
+    private final String imagePath;
 
-    public CitizenRequest(Double latitude, Double longitude,
+    public CitizenRequest(String uid, Double latitude, Double longitude,
                           String category, String description, String imagePath) {
-        this.timestamp = new Timestamp(System.currentTimeMillis());
+        //this.timestamp = new Timestamp(System.currentTimeMillis());
+        this.uid = uid;
+        date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         this.latitude = latitude;
         this.longitude = longitude;
         this.category = category;
@@ -21,27 +30,21 @@ public class CitizenRequest {
         this.imagePath = imagePath;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
+//    public Timestamp getTimestamp() {
+//        return timestamp;
+//    }
 
-    public Double getLatitude() {
-        return latitude;
-    }
+    public Double getLatitude() { return latitude; }
 
-    public Double getLongitude() {
-        return longitude;
-    }
+    public Double getLongitude() { return longitude; }
 
-    public String getCategory() {
-        return category;
-    }
+    public String getCategory() { return category; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
-    public String getImagePath() {
-        return imagePath;
-    }
+    public String getImagePath() { return imagePath; }
+
+    public String getDate() { return date; }
+
+    public String getTime() { return time; }
 }

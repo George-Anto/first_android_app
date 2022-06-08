@@ -7,64 +7,40 @@
     tools:context=".MainActivity2">
 
     <Button
-        android:id="@+id/onread"
+        android:id="@+id/goToMapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onReadData"
-        android:text="Read"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.411" />
-
-    <EditText
-        android:id="@+id/dataToWriteText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Write to DB"
-        android:inputType="textPersonName"
+        android:onClick="onViewOnMap"
+        android:text="View Requests On Map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.131" />
+        app:layout_constraintVertical_bias="0.687" />
 
     <Button
-        android:id="@+id/writeDataButton"
+        android:id="@+id/goToMyRequestsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onWriteData"
-        android:text="Write"
+        android:onClick="onViewMyRequests"
+        android:text="View My Requests"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.294" />
+        app:layout_constraintVertical_bias="0.465" />
 
-    <ScrollView
-        android:layout_width="289dp"
-        android:layout_height="254dp"
+    <Button
+        android:id="@+id/goToNewRequestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onNewRequest"
+        android:text="New Request"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.805">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/dataText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </ScrollView>
+        app:layout_constraintVertical_bias="0.227" />
 </androidx.constraintlayout.widget.ConstraintLayout>

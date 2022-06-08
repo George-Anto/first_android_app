@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             errorToast(email, password);
     }
 
-    public void  onSignup(View view) {
+    public void onSignup(View view) {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
