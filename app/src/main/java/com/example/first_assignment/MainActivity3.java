@@ -1,36 +1,65 @@
 package com.example.first_assignment;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.util.UUID;
 
 public class MainActivity3 extends AppCompatActivity implements AdapterView.OnItemSelectedListener, LocationListener {
     private Spinner spinner;
     private static final String[] paths = {"Puddle", "Broken Traffic Light", "Damaged Building",
             "Fallen Tree", "Other"};
+
     private LocationManager manager;
+
     private FirebaseDatabase database;
     private DatabaseReference requestsTable;
+
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
+
+    private ImageView imageToUploadView;
+    public Uri imageUri;
+
+    private EditText descriptionText;
+
     private String uid;
     private String category;
     private double latitude;
     private double longitude;
+    private String description;
+    private String imagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +67,11 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
         setContentView(R.layout.activity_main3);
 
         uid = getIntent().getStringExtra("Uid");
+
+        imageToUploadView = findViewById(R.id.newRequestImageView);
+        imageToUploadView.setOnClickListener(v -> { chooseImage(); });
+
+        descriptionText = findViewById(R.id.newRequestDescriptionText);
 
         useGPS();
 
@@ -51,6 +85,9 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
 
         database = FirebaseDatabase.getInstance();
         requestsTable = database.getReference("citizens_requests");
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
     }
 
     @Override
@@ -109,7 +146,58 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
         }
     }
 
-    public void onsSendRequest(View view) {
+    private void chooseImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 1);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            imageToUploadView.setImageURI(imageUri);
+            uploadImage();
+        }
+    }
+
+    private void uploadImage() {
+        final String randomKey = UUID.randomUUID().toString();
+        StorageReference imagesStorageRef = storageReference.child("images/" + randomKey);
+
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setTitle("Uploading Image...");
+        pd.show();
+
+        imagesStorageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+            pd.dismiss();
+            StorageReference currentImagePath = storageReference.child("images/" + randomKey);
+            imagePath = currentImagePath.toString();
+            Snackbar.make(findViewById(android.R.id.content), "Image Uploaded", Snackbar.LENGTH_LONG).show();
+        }).addOnFailureListener(e -> {
+            pd.dismiss();
+            Toast.makeText(getApplicationContext(), "Upload Failed", Toast.LENGTH_LONG).show();
+        }).addOnProgressListener(snapshot -> {
+            double progressPercent = (100 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+            pd.setMessage((int) progressPercent + "%");
+        });
+
+
+
+// Create a reference to 'images/mountains.jpg'
+//        StorageReference mountainImagesRef = storageRef.child("images/mountains.jpg");
+
+// While the file names are the same, the references point to different files
+//        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
+//        mountainsRef.getPath().equals(mountainImagesRef.getPath());
+
+    }
+
+    public void onsSendRequest(View view) {
+        description = descriptionText.getText().toString();
+        CitizenRequest currentRequest = new CitizenRequest(uid, latitude, longitude, category, description, imagePath);
+        requestsTable.push().setValue(currentRequest);
     }
 }
