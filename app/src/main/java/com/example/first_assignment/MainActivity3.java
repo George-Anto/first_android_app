@@ -2,6 +2,7 @@ package com.example.first_assignment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -114,6 +115,7 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
     public void onLocationChanged(@NonNull Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        manager.removeUpdates(this);
     }
 
     @Override
@@ -154,14 +156,14 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
         StorageReference imagesStorageRef = storageReference.child("images/" + randomKey);
 
         final ProgressDialog pd = new ProgressDialog(this);
-        pd.setTitle("Uploading Image...");
+        pd.setTitle("Processing Image...");
         pd.show();
 
         imagesStorageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
             pd.dismiss();
             StorageReference currentImagePath = storageReference.child("images/" + randomKey);
             imagePath = currentImagePath.toString();
-            Snackbar.make(findViewById(android.R.id.content), "Image Uploaded", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(android.R.id.content), "Image Processed", Snackbar.LENGTH_LONG).show();
         }).addOnFailureListener(e -> {
             pd.dismiss();
             Toast.makeText(getApplicationContext(), "Upload Failed", Toast.LENGTH_LONG).show();
@@ -173,7 +175,28 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
 
     public void onsSendRequest(View view) {
         description = descriptionText.getText().toString();
+        if (description.trim().matches("")) {
+            Toast.makeText(this, "Please provide a description.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (imagePath == null) {
+            Toast.makeText(this, "Please upload an image of the incident.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (latitude == 0 || longitude == 0) {
+            Toast.makeText(this, "Please enable GPS to retrieve your location.", Toast.LENGTH_LONG).show();
+            return;
+        }
         CitizenRequest currentRequest = new CitizenRequest(uid, latitude, longitude, category, description, imagePath);
         requestsTable.push().setValue(currentRequest);
+        showMessage("Success", "Your Request has been uploaded.");
+    }
+
+    private void showMessage(String title, String message){
+        new AlertDialog.Builder(this)
+                .setCancelable(true)
+                .setTitle(title)
+                .setMessage(message)
+                .show();
     }
 }

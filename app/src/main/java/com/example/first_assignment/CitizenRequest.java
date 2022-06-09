@@ -7,7 +7,6 @@ import java.util.Locale;
 
 public class CitizenRequest {
 
-    //private Timestamp timestamp;
     private final String uid;
     private final String date;
     private final String time;
@@ -19,7 +18,6 @@ public class CitizenRequest {
 
     public CitizenRequest(String uid, Double latitude, Double longitude,
                           String category, String description, String imagePath) {
-        //this.timestamp = new Timestamp(System.currentTimeMillis());
         this.uid = uid;
         date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
@@ -29,10 +27,6 @@ public class CitizenRequest {
         this.description = description;
         this.imagePath = imagePath;
     }
-
-//    public Timestamp getTimestamp() {
-//        return timestamp;
-//    }
 
     public Double getLatitude() { return latitude; }
 
