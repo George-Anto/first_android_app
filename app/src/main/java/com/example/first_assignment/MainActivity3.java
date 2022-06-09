@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,19 +19,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
+
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+
 
 import java.util.UUID;
 
@@ -94,23 +90,18 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
-                Toast.makeText(this, paths[0], Toast.LENGTH_LONG).show();
                 category = paths[0];
                 break;
             case 1:
-                Toast.makeText(this, paths[1], Toast.LENGTH_LONG).show();
                 category = paths[1];
                 break;
             case 2:
-                Toast.makeText(this, paths[2], Toast.LENGTH_LONG).show();
                 category = paths[2];
                 break;
             case 3:
-                Toast.makeText(this, paths[3], Toast.LENGTH_LONG).show();
                 category = paths[3];
                 break;
             case 4:
-                Toast.makeText(this, paths[4], Toast.LENGTH_LONG).show();
                 category = paths[4];
                 break;
         }
@@ -123,8 +114,6 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
     public void onLocationChanged(@NonNull Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        //Toast.makeText(this, Double.toString(latitude), Toast.LENGTH_LONG).show();
-        //manager.removeUpdates(this);
     }
 
     @Override
@@ -147,10 +136,7 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
     }
 
     private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 1);
+        startActivityForResult(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), 1);
     }
 
     @Override
@@ -180,19 +166,9 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
             pd.dismiss();
             Toast.makeText(getApplicationContext(), "Upload Failed", Toast.LENGTH_LONG).show();
         }).addOnProgressListener(snapshot -> {
-            double progressPercent = (100 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+            double progressPercent = (100.00 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
             pd.setMessage((int) progressPercent + "%");
         });
-
-
-
-// Create a reference to 'images/mountains.jpg'
-//        StorageReference mountainImagesRef = storageRef.child("images/mountains.jpg");
-
-// While the file names are the same, the references point to different files
-//        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
-//        mountainsRef.getPath().equals(mountainImagesRef.getPath());
-
     }
 
     public void onsSendRequest(View view) {
