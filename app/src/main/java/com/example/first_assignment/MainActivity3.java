@@ -190,6 +190,8 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
         CitizenRequest currentRequest = new CitizenRequest(uid, latitude, longitude, category, description, imagePath);
         requestsTable.push().setValue(currentRequest);
         showMessage("Success", "Your Request has been uploaded.");
+        imageToUploadView.setImageURI(Uri.parse(""));
+        descriptionText.setText("");
     }
 
     private void showMessage(String title, String message){
