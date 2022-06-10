@@ -14,17 +14,19 @@ public class CitizenRequest {
     private String time;
     private Double latitude;
     private Double longitude;
+    private String locationAddress;
     private String category;
     private String description;
     private String imagePath;
 
-    public CitizenRequest(String uid, Double latitude, Double longitude,
+    public CitizenRequest(String uid, Double latitude, Double longitude, String locationAddress,
                           String category, String description, String imagePath) {
         this.uid = uid;
         date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         this.latitude = latitude;
         this.longitude = longitude;
+        this.locationAddress = locationAddress;
         this.category = category;
         this.description = description;
         this.imagePath = imagePath;
@@ -47,6 +49,8 @@ public class CitizenRequest {
     public String getTime() { return time; }
 
     public String getUid() { return uid; }
+
+    public String getLocationAddress() { return locationAddress; }
 
     @Override
     public String toString() {

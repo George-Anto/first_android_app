@@ -10,6 +10,8 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -34,6 +36,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class MainActivity3 extends AppCompatActivity implements AdapterView.OnItemSelectedListener, LocationListener {
@@ -58,6 +63,7 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
     private String category;
     private double latitude;
     private double longitude;
+    private String locationAddress;
     private String description;
     private String imagePath;
 
@@ -118,6 +124,16 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
     public void onLocationChanged(@NonNull Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            Address firstAddress = addresses.get(0);
+            locationAddress = firstAddress.getAddressLine(0);
+        } catch (Exception e) {
+
+        }
+
         manager.removeUpdates(this);
     }
 
@@ -190,7 +206,7 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
             Toast.makeText(this, "Please enable GPS to retrieve your location.", Toast.LENGTH_LONG).show();
             return;
         }
-        CitizenRequest currentRequest = new CitizenRequest(uid, latitude, longitude, category, description, imagePath);
+        CitizenRequest currentRequest = new CitizenRequest(uid, latitude, longitude, locationAddress, category, description, imagePath);
         requestsTable.push().setValue(currentRequest);
         showMessage("Success", "Your Request has been uploaded.");
         imageToUploadView.setImageURI(Uri.parse(""));

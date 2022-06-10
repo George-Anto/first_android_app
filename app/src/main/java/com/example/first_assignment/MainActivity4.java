@@ -54,14 +54,12 @@ public class MainActivity4 extends AppCompatActivity {
                     StringBuilder builder = new StringBuilder();
                     AtomicInteger i = new AtomicInteger();
                     myRequests.forEach(aRequest -> {
-                        builder.append("Request").append(i.incrementAndGet()).append("\n");
+                        builder.append("Request").append(" ").append(i.incrementAndGet()).append("\n");
                         builder.append("Category: ").append(aRequest.getCategory()).append("\n");
                         builder.append("Description: ").append(aRequest.getDescription()).append("\n");
                         builder.append("Date: ").append(aRequest.getDate()).append("\n");
                         builder.append("Time: ").append(aRequest.getTime()).append("\n");
-                        builder.append("Location").append("\n");
-                        builder.append("Latitude: ").append(aRequest.getLatitude()).append("\n");
-                        builder.append("Longitude: ").append(aRequest.getLongitude()).append("\n");
+                        builder.append("Location: ").append(aRequest.getLocationAddress()).append("\n");
                         builder.append("\n");
                     });
                     myRequestsView.setText(builder.toString());
