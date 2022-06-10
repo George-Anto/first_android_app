@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -162,13 +165,13 @@ public class MainActivity3 extends AppCompatActivity implements AdapterView.OnIt
         imagesStorageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
             pd.dismiss();
             StorageReference currentImagePath = storageReference.child("images/" + randomKey);
-            imagePath = currentImagePath.toString();
+            currentImagePath.getDownloadUrl().addOnSuccessListener(uri -> imagePath = uri.toString());
             Snackbar.make(findViewById(android.R.id.content), "Image Processed", Snackbar.LENGTH_LONG).show();
         }).addOnFailureListener(e -> {
             pd.dismiss();
             Toast.makeText(getApplicationContext(), "Upload Failed", Toast.LENGTH_LONG).show();
         }).addOnProgressListener(snapshot -> {
-            double progressPercent = (100.00 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+            double progressPercent = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
             pd.setMessage((int) progressPercent + "%");
         });
     }
