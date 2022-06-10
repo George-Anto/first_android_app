@@ -1,8 +1,11 @@
 package com.example.first_assignment;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,11 +14,25 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.first_assignment.databinding.ActivityMapsBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+
+    private String category;
+    private ArrayList<CitizenRequest> totalRequests = new ArrayList<>();
+
+    private FirebaseDatabase database;
+    private DatabaseReference requestsTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +45,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        category = getIntent().getStringExtra("Category");
+
+        database = FirebaseDatabase.getInstance();
+        requestsTable = database.getReference("citizens_requests");
+
+        if (category.equals("All")) {
+            requestsTable.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Iterable<DataSnapshot> children = snapshot.getChildren();
+                    children.forEach(child -> {
+                        CitizenRequest aRequest = child.getValue(CitizenRequest.class);
+                        totalRequests.add(aRequest);
+                    });
+                    Log.d("My Requests", totalRequests.toString());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d("Database Error", error.getMessage());
+                }
+            });
+        } else {
+            Query query = requestsTable.orderByChild("category").equalTo(category);
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Iterable<DataSnapshot> children = snapshot.getChildren();
+                    children.forEach(child -> {
+                        CitizenRequest aRequest = child.getValue(CitizenRequest.class);
+                        totalRequests.add(aRequest);
+                    });
+                    Log.d("My Requests", totalRequests.toString());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d("Database Error", error.getMessage());
+                }
+            });
+        }
     }
 
     /**

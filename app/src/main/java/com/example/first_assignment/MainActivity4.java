@@ -34,6 +34,7 @@ public class MainActivity4 extends AppCompatActivity {
 
         uid = getIntent().getStringExtra("Uid");
         myRequestsView = findViewById(R.id.myRequestsView);
+        myRequestsView.setText("Loading Requests...");
 
         database = FirebaseDatabase.getInstance();
         requestsTable = database.getReference("citizens_requests");
@@ -46,8 +47,8 @@ public class MainActivity4 extends AppCompatActivity {
                 children.forEach(child -> {
                     CitizenRequest aRequest = child.getValue(CitizenRequest.class);
                     myRequests.add(aRequest);
-//                    Log.d("My Requests", aRequest.toString());
                 });
+//                Log.d("My Requests", aRequest.toString());
                 if (myRequests.size() == 0) {
                     myRequestsView.setText("You have not made any Requests yet.\nGo to New Requests, to create one.");
                 } else {
