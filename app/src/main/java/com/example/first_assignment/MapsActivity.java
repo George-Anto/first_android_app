@@ -45,48 +45,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        category = getIntent().getStringExtra("Category");
-
-        database = FirebaseDatabase.getInstance();
-        requestsTable = database.getReference("citizens_requests");
-
-        if (category.equals("All")) {
-            requestsTable.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Iterable<DataSnapshot> children = snapshot.getChildren();
-                    children.forEach(child -> {
-                        CitizenRequest aRequest = child.getValue(CitizenRequest.class);
-                        totalRequests.add(aRequest);
-                    });
-                    Log.d("My Requests", totalRequests.toString());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.d("Database Error", error.getMessage());
-                }
-            });
-        } else {
-            Query query = requestsTable.orderByChild("category").equalTo(category);
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Iterable<DataSnapshot> children = snapshot.getChildren();
-                    children.forEach(child -> {
-                        CitizenRequest aRequest = child.getValue(CitizenRequest.class);
-                        totalRequests.add(aRequest);
-                    });
-                    Log.d("My Requests", totalRequests.toString());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.d("Database Error", error.getMessage());
-                }
-            });
-        }
     }
 
     /**
@@ -101,10 +59,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        LatLng piraeusLatLng = new LatLng(37.938775, 23.649113333333332);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        category = getIntent().getStringExtra("Category");
+
+        database = FirebaseDatabase.getInstance();
+        requestsTable = database.getReference("citizens_requests");
+        Query query;
+
+        if (category.equals("All"))
+            query = requestsTable;
+        else
+            query = requestsTable.orderByChild("category").equalTo(category);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Iterable<DataSnapshot> children = snapshot.getChildren();
+                children.forEach(child -> {
+                    CitizenRequest aRequest = child.getValue(CitizenRequest.class);
+                    totalRequests.add(aRequest);
+                    StringBuilder details = new StringBuilder();
+                    details.append("Description: ").append(aRequest.getDescription()).append(" ");
+                    details.append("Date: ").append(aRequest.getDate()).append(" ");
+                    details.append("Time: ").append(aRequest.getTime()).append("");
+                    mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(aRequest.getLatitude(), aRequest.getLongitude()))
+                                    .snippet(details.toString())
+                                    .title(aRequest.getCategory() + ", " + aRequest.getLocationAddress()));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(piraeusLatLng, 14f));
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Database Error", error.getMessage());
+            }
+        });
     }
 }
