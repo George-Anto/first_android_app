@@ -10,11 +10,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
-public class MainActivity2 extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class MainMenuActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     String uid;
     String category;
 
+    //Dropdown list with all the categories of requests the user can select and view on map
     private Spinner spinner;
+    //The categories we will use
     private static final String[] paths = {"All", "Puddle", "Broken Traffic Light", "Damaged Building",
             "Fallen Tree", "Other"};
 
@@ -23,14 +25,16 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main_menu);
 
+        //Retrieve user's id
         uid = getIntent().getStringExtra("Uid");
 
         goToMapButton = findViewById(R.id.goToMapButton);
 
+        //Create the dropdown list with it's options
         spinner = findViewById(R.id.viewOnMapSpinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity2.this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainMenuActivity.this,
                 android.R.layout.simple_spinner_item, paths);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -38,6 +42,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         spinner.setOnItemSelectedListener(this);
     }
 
+    //Get the category of requests the user selected
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
@@ -62,21 +67,28 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             default:
                 category = "All";
         }
+        //Change the goToMap button's text according to the category the user's selected
         goToMapButton.setText("View " + category + " Requests On Map");
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) { }
 
+    //Navigate user to the new request activity
     public void  onNewRequest(View view) {
-        startActivity(new Intent(this, MainActivity3.class).putExtra("Uid", uid));
+        //Send the user's id to the next activity as well
+        startActivity(new Intent(this, CreateNewRequestActivity.class).putExtra("Uid", uid));
     }
 
+    //Navigate user to view their past requests activity
     public void onViewMyRequests(View view) {
-        startActivity(new Intent(this, MainActivity4.class).putExtra("Uid", uid));
+        //Send the id too
+        startActivity(new Intent(this, ViewMyRequestsActivity.class).putExtra("Uid", uid));
     }
 
+    //Navigate user to view requests on map activity
     public void onViewOnMap(View view) {
+        //Send the category the user selected to the next activity
         startActivity(new Intent(this, MapsActivity.class).putExtra("Category", category));
     }
 }

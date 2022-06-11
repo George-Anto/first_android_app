@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,9 +27,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
+    //Category of requests that the user selected
     private String category;
+    //ArrayList with all the requests that will be retrieved from the database
     private ArrayList<CitizenRequest> totalRequests = new ArrayList<>();
 
+    //Database and reference in that db
     private FirebaseDatabase database;
     private DatabaseReference requestsTable;
 
@@ -59,14 +61,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        //The coordinates of the Pasalimani in Piraeus, we assume that this is the location our users live
         LatLng piraeusLatLng = new LatLng(37.938775, 23.649113333333332);
 
+        //Get the category the user selected
         category = getIntent().getStringExtra("Category");
 
+        //Create the db reference
         database = FirebaseDatabase.getInstance();
         requestsTable = database.getReference("citizens_requests");
         Query query;
 
+        //If the user wants to view all requests, we will retrieve all the "citizens_requests" table
+        //else if the user selected a specific category, we will only select the objects in the table
+        //that are of that category
         if (category.equals("All"))
             query = requestsTable;
         else
@@ -78,7 +86,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Iterable<DataSnapshot> children = snapshot.getChildren();
                 children.forEach(child -> {
                     CitizenRequest aRequest = child.getValue(CitizenRequest.class);
+                    //Add the current request to the ArrayList
                     totalRequests.add(aRequest);
+                    //Fill the marker with the information about the current request
                     StringBuilder details = new StringBuilder();
                     details.append("Description: ").append(aRequest.getDescription()).append(" ");
                     details.append("Date: ").append(aRequest.getDate()).append(" ");
@@ -87,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .position(new LatLng(aRequest.getLatitude(), aRequest.getLongitude()))
                                     .snippet(details.toString())
                                     .title(aRequest.getCategory() + ", " + aRequest.getLocationAddress()));
+                    //Zoom to Piraeus to view the markers better
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(piraeusLatLng, 14f));
                 });
             }
