@@ -144,7 +144,8 @@ public class CreateNewRequestActivity extends AppCompatActivity implements Adapt
             Address firstAddress = addresses.get(0);
             locationAddress = firstAddress.getAddressLine(0);
         } catch (Exception e) {
-            Log.d("Error", e.getLocalizedMessage());
+            Log.d("Error---------------------------------------------------", e.getLocalizedMessage());
+            e.printStackTrace();
         }
         //After we retrieve the user's location once, we stop getting any more location data from the user
         manager.removeUpdates(this);

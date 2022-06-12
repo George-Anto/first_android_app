@@ -31,7 +31,7 @@ public class CitizenRequest {
         time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         this.latitude = latitude;
         this.longitude = longitude;
-        this.locationAddress = locationAddress;
+        setLocationAddress(locationAddress);
         this.category = category;
         this.description = description;
         this.imagePath = imagePath;
@@ -57,6 +57,16 @@ public class CitizenRequest {
     public String getUid() { return uid; }
 
     public String getLocationAddress() { return locationAddress; }
+
+    //If we are not able to extract the address via the Geocoder (due to slow internet for instance)
+    //We set an unknown address String
+    public void setLocationAddress(String address) {
+        if (address == null) {
+            this.locationAddress = "Unknown Address";
+            return;
+        }
+        this.locationAddress = address;
+    }
 
     //The toString method, mainly used for debugging purposes for this project
     @Override
